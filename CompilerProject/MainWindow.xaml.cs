@@ -1,5 +1,8 @@
-﻿using System;
+﻿using BNFRuleParser;
+using Irony.Parsing;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -24,6 +27,17 @@ namespace CompilerProject {
     public partial class MainWindow : Window, INotifyPropertyChanged {
         public MainWindow() {
             InitializeComponent();
+            this.Rules = @"
+testing;
+program;
+root;
+root = z;
+program = e[0] | e[0];
+program = e[*] + e[+];
+program = e[0] | e;
+program = e | e;
+";
+
         }
 
         private string _Input;
@@ -54,6 +68,10 @@ namespace CompilerProject {
         #endregion INotifyPropertyChanged Implementation
 
         private void Process_Click(object sender, RoutedEventArgs e) {
+            ParseTree langTree = BNFParser.Parse(this.Rules);
+
+            var executionPath = CompilerBuilder.Build(langTree, this.Input);
+
             var path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Grammar1.exe");
             AssemblyGen ag = new AssemblyGen(path);
             
@@ -76,8 +94,11 @@ namespace CompilerProject {
                     var localGrammar = g2.Local(Exp.New(grammar));
                     var localParser = g2.Local(Exp.New(typeof(Irony.Parsing.Parser), localGrammar));
                     var tree = localParser.Invoke("Parse", "1");
+                    //var tree = localParser.Invoke(this.Input, "1");
+
                     //var xml = tree.Invoke("ToXml");
                     //g2.WriteLine("Testing!");
+                    
                     var output = tree.Field("Root").Property("ChildNodes")[0];
                     g2.WriteLine(output);
 
@@ -85,6 +106,7 @@ namespace CompilerProject {
             }
 
             ag.Save();
+            ///TODO: this should take the input as a command line argument
             AppDomain.CurrentDomain.ExecuteAssembly(path);
         }
     }

@@ -1,3 +1,6 @@
 CompilerProject/bin/
 CompilerProject/obj/
 packages/
+CompilerProject.v12.suo
+BNFRuleParser/obj/
+BNFRuleParser/bin/

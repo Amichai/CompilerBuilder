@@ -67,6 +67,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="BNFRule.cs" />
+    <Compile Include="CompilerBuilder.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -104,6 +106,10 @@
     <ProjectReference Include="..\..\..\..\ThirdParySource\runsharp-0.1.2-pre-alpha-src\runsharp-0.1.2-pre-alpha-src\RunSharp\RunSharp.csproj">
       <Project>{c835bb75-7955-4315-b52c-fa59e25219f4}</Project>
       <Name>RunSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BNFRuleParser\BNFRuleParser.csproj">
+      <Project>{c750ab88-484f-48a4-9a00-40d085c5382b}</Project>
+      <Name>BNFRuleParser</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
