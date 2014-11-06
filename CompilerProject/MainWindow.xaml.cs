@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -68,46 +69,9 @@ root = t;
         private void Process_Click(object sender, RoutedEventArgs e) {
             ParseTree langTree = BNFParser.Parse(this.Rules);
 
-            var executionPath = CompilerBuilder.Build(langTree, this.Input);
-            AppDomain.CurrentDomain.ExecuteAssembly(executionPath);
-
-            return;
-            var path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Grammar1.exe");
-            AssemblyGen ag = new AssemblyGen(path);
-            
-            TypeGen grammar = ag.Public.Class("grammar", typeof(Irony.Parsing.Grammar));
-
-            CodeGen g = grammar.Constructor();
-            {
-                var programLocal = g.Local(Exp.New(typeof(Irony.Parsing.NonTerminal), "Equation"));
-                var numberLocal = g.Local(Exp.New(typeof(Irony.Parsing.NumberLiteral), "Number"));
-                g.Assign(programLocal.Field("Rule"), numberLocal);
-                g.Assign(g.This().Field("Root"), programLocal);
-
-            }
-
-            TypeGen p = ag.Public.Class("Program");
-            {
-                CodeGen g2 = p.Public.Static.Method(typeof(void), "Main").Parameter(typeof(string[]), "args");
-                {
-
-                    var localGrammar = g2.Local(Exp.New(grammar));
-                    var localParser = g2.Local(Exp.New(typeof(Irony.Parsing.Parser), localGrammar));
-                    var tree = localParser.Invoke("Parse", "1");
-                    //var tree = localParser.Invoke(this.Input, "1");
-
-                    //var xml = tree.Invoke("ToXml");
-                    //g2.WriteLine("Testing!");
-                    
-                    var output = tree.Field("Root").Property("ChildNodes")[0];
-                    g2.WriteLine(output);
-
-                }
-            }
-
-            ag.Save();
-            ///TODO: this should take the input as a command line argument
-            AppDomain.CurrentDomain.ExecuteAssembly(path);
+            var executionPath = CompilerBuilder.Build(langTree);
+            //Process.Start(executionPath, this.Input);
+            AppDomain.CurrentDomain.ExecuteAssembly(executionPath, new string[] {this.Input});
         }
     }
 }

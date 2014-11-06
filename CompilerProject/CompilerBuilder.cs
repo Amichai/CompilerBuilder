@@ -15,7 +15,7 @@ namespace CompilerProject {
         /// AppDomain.CurrentDomain.ExecuteAssembly(path);
         /// </summary>
         /// <returns></returns>
-        public static string Build(ParseTree languageDefinition, string input) {
+        public static string Build(ParseTree languageDefinition) {
             var path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Grammar1.exe");
             AssemblyGen ag = new AssemblyGen(path);
             TypeGen grammar = ag.Public.Class("grammar", typeof(Grammar));
@@ -79,7 +79,10 @@ namespace CompilerProject {
 
                     var localGrammar = g2.Local(Exp.New(grammar));
                     var localParser = g2.Local(Exp.New(typeof(Parser), localGrammar));
-                    var tree = localParser.Invoke("Parse", input);
+
+                    ///Pass back the dll so the caller can execute with command line arguments
+                    var args = g2.Arg("args");
+                    var tree = localParser.Invoke("Parse", args[0]);
                     ///Use the passed input;
                     ///Make it print the xml!
                     //var xml = tree.Invoke("ToXml");
