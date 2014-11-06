@@ -26,7 +26,7 @@ testing;
 program = e[0] | e[0];
 program = e[*] + e[+];
 program = e[0] | e;
-program = e | e;
+program = e | e | e;
 ";
 //program = e | e;
 //expressionList = expression + t

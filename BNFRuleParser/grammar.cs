@@ -43,7 +43,7 @@ namespace BNFRuleParser {
             RegisterOperators(1, "+", "|");
             this.MarkPunctuation(sem, b1, b2, eq);
 
-            bnfRule.Rule = qualifiedIdentifier + binOp + qualifiedIdentifier | qualifiedIdentifier;
+            bnfRule.Rule = bnfRule + binOp + bnfRule | qualifiedIdentifier;
 
             qualifiedIdentifier.Rule = identifier + b1 + qualification + b2 | identifier;
             qualification.Rule = number | q1 | q2 | and;

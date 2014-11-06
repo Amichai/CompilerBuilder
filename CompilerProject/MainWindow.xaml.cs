@@ -28,15 +28,13 @@ namespace CompilerProject {
         public MainWindow() {
             InitializeComponent();
             this.Rules = @"
-testing;
-program;
+equation;
+number;
 root;
-root = z;
-program = e[0] | e[0];
-program = e[*] + e[+];
-program = e[0] | e;
-program = e | e;
+root = t;
 ";
+
+            this.Input = "t";
 
         }
 
@@ -71,7 +69,9 @@ program = e | e;
             ParseTree langTree = BNFParser.Parse(this.Rules);
 
             var executionPath = CompilerBuilder.Build(langTree, this.Input);
+            AppDomain.CurrentDomain.ExecuteAssembly(executionPath);
 
+            return;
             var path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Grammar1.exe");
             AssemblyGen ag = new AssemblyGen(path);
             
