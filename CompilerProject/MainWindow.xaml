@@ -14,6 +14,11 @@
         </Grid.RowDefinitions>
         <TextBox Text="{Binding Rules}" AcceptsReturn="True"/>
         <TextBox Text="{Binding Input}" Grid.Column="1" />
-        <Button Grid.Row="1" Padding="5" Margin="10" Click="Process_Click">Process</Button>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <Button  Padding="5" Margin="10" Width="100" Click="Compile_Click">Compile</Button>
+            <Button  Padding="5" Margin="10" Width="100" Click="Process_Click">Process</Button>
+            
+        </StackPanel>
     </Grid>
 </Window>

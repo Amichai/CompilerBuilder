@@ -19,7 +19,7 @@ namespace BNFRuleParser {
             var descriptor = new NonTerminal("Descriptor");
             var qualifiedIdentifier = new NonTerminal("QualifiedIdentifier");
             var qualification = new NonTerminal("Qualification");
-            var eq = ToTerm("=");
+            var eq = ToTerm("=");   
             var or = ToTerm("|");
             var and = ToTerm("+");
 

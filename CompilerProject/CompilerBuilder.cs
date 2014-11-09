@@ -20,7 +20,6 @@ namespace CompilerProject {
             AssemblyGen ag = new AssemblyGen(path);
             TypeGen grammar = ag.Public.Class("grammar", typeof(Grammar));
             CodeGen constructorDef = grammar.Constructor();
-            Dictionary<string, Operand> operands = new Dictionary<string, Operand>();
 
             foreach (var statement in languageDefinition.Root.ChildNodes) {
                 var d = statement.ChildNodes.Single();
@@ -38,31 +37,7 @@ namespace CompilerProject {
                         var rules = d.ChildNodes[1];
                         Operand toAssign = null;
                         foreach (var rule in rules.ChildNodes) {
-                            string ruleType = rule.Term.ToString();
-                            foreach (var r in rule.ChildNodes) {
-                                string r2 = r.Term.ToString();
-                                switch (r2) {
-                                    case "QualifiedIdentifier":
-                                        ///Check if this qualified identifier exists in our dictionary of operands
-                                        Operand op;
-                                        var identifierName = r.ChildNodes.Single().Token.Value.ToString();
-                                        if (operands.TryGetValue(identifierName, out op)) {
-                                            Debug.Print("matched");
-                                            toAssign = op;
-                                            
-                                        } else {
-                                            Debug.Print("not matched");
-                                            //constructorDef.Invoke(constructorDef.This(), "ToTerm", Exp.New(typeof(string), identifierName));
-                                            toAssign = constructorDef.This().Invoke("ToTerm", identifierName);
-                                            //toAssign = constructorDef.Local(Exp.New(typeof(Terminal), identifierName));
-                                        }
-                                        break;
-                                    case "BNFRule":
-                                        break;
-                                    default:
-                                        throw new Exception();
-                                }
-                            }
+                            toAssign = parseBNFRule(rule, constructorDef);
                             constructorDef.Assign(o1.Field("Rule"), toAssign);
                         }
                         break;
@@ -103,6 +78,35 @@ namespace CompilerProject {
             }
             ag.Save();
             return path;
+        }
+
+        private static Dictionary<string, Operand> operands = new Dictionary<string, Operand>();
+
+        private static Operand parseBNFRule(ParseTreeNode node, CodeGen constructorDef) {
+            if (node.Term.ToString() == "QualifiedIdentifier") {
+                Operand op;
+                Operand toAssign;
+                var identifierName = node.ChildNodes.Single().Token.Value.ToString();
+                if (operands.TryGetValue(identifierName, out op)) {
+                    Debug.Print("matched");
+                    toAssign = op;
+                } else {
+                    Debug.Print("not matched");
+                    //constructorDef.Invoke(constructorDef.This(), "ToTerm", Exp.New(typeof(string), identifierName));
+                    toAssign = constructorDef.This().Invoke("ToTerm", identifierName);
+                    //toAssign = constructorDef.Local(Exp.New(typeof(Terminal), identifierName));
+                }
+                return toAssign;
+            }
+
+            if (node.ChildNodes.Count == 1) {
+                return parseBNFRule(node.ChildNodes.Single(), constructorDef);
+            } else if (node.ChildNodes.Count == 3) {
+                var a = parseBNFRule(node.ChildNodes.First(), constructorDef);
+                var b = parseBNFRule(node.ChildNodes.Last(), constructorDef);
+                return a.Add(b);
+            }
+            throw new NotImplementedException();
         }
     }
 }

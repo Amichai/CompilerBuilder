@@ -32,7 +32,7 @@ namespace CompilerProject {
 equation;
 number;
 root;
-root = t;
+root = t + j;
 ";
 
             this.Input = "t";
@@ -67,11 +67,20 @@ root = t;
         #endregion INotifyPropertyChanged Implementation
 
         private void Process_Click(object sender, RoutedEventArgs e) {
-            ParseTree langTree = BNFParser.Parse(this.Rules);
-
-            var executionPath = CompilerBuilder.Build(langTree);
-            //Process.Start(executionPath, this.Input);
+            if (this.executionPath == null) {
+                this.compile();
+            }
             AppDomain.CurrentDomain.ExecuteAssembly(executionPath, new string[] {this.Input});
+        }
+        private string executionPath = null;
+
+        private void Compile_Click(object sender, RoutedEventArgs e) {
+            compile();
+        }
+
+        private void compile() {
+            ParseTree langTree = BNFParser.Parse(this.Rules);
+            this.executionPath = CompilerBuilder.Build(langTree);
         }
     }
 }
