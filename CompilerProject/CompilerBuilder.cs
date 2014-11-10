@@ -1,4 +1,5 @@
-﻿using Irony.Parsing;
+﻿using Helpers;
+using Irony.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -57,22 +58,16 @@ namespace CompilerProject {
                     ///Pass back the dll so the caller can execute with command line arguments
                     var args = g2.Arg("args");
                     var tree = localParser.Invoke("Parse", args[0]);
-                    ///Use the passed input;
-                    ///Make it print the xml!
-                    //var xml = tree.Invoke("ToXml");
-                    //g2.WriteLine("Testing!");
-
+                    
                     var msgCount = tree.Field("ParserMessages").Property("Count");
                     g2.If(msgCount.GT(0));
                     var msg = tree.Field("ParserMessages")[0];
                     g2.WriteLine(msg);
 
                     g2.Else();
-                    var output = tree.Field("Root").Property("ChildNodes")[0];
-                    g2.WriteLine(output);
+                    var cb = g2.Local(Exp.New(typeof(ToXmlHelper)));
+                    g2.WriteLine(cb.Invoke("ToXml", tree));
                     g2.End();
-
-
                 }
             }
             ag.Save();
@@ -108,7 +103,6 @@ namespace CompilerProject {
                             throw new Exception();
                     }
                       return set;
-                    //return toAssign;
                 }
                 return toAssign;
             }
@@ -130,5 +124,7 @@ namespace CompilerProject {
             }
             throw new NotImplementedException();
         }
+
+
     }
 }

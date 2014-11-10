@@ -111,6 +111,10 @@
       <Project>{c750ab88-484f-48a4-9a00-40d085c5382b}</Project>
       <Name>BNFRuleParser</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Helpers\Helpers.csproj">
+      <Project>{b205a8da-6737-4ec5-8891-566c039fa83e}</Project>
+      <Name>Helpers</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

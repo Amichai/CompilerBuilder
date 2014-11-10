@@ -4,3 +4,5 @@ packages/
 CompilerProject.v12.suo
 BNFRuleParser/obj/
 BNFRuleParser/bin/
+Helpers/bin/
+Helpers/obj/

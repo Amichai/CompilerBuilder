@@ -37,7 +37,7 @@ root = t[+];
 //root = t[+] + j;
 
 
-            this.Input = "t";
+            this.Input = "t t t";
             this.process();
 
         }
