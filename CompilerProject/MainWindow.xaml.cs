@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,10 +31,11 @@ namespace CompilerProject {
             InitializeComponent();
             this.Rules = @"
 equation;
-number;
+number = t;
 root;
-root = t[+];
+root = number;
 ";
+//root = t[+] + g[*];
 //root = t[+] + j;
 
 
@@ -78,16 +80,20 @@ root = t[+];
                 this.compile();
             }
             AppDomain.CurrentDomain.ExecuteAssembly(executionPath, new string[] { this.Input });
+
         }
         private string executionPath = null;
 
         private void Compile_Click(object sender, RoutedEventArgs e) {
             compile();
         }
-            
+
+        private static int assemblyCounter = 0;
         private void compile() {
             ParseTree langTree = BNFParser.Parse(this.Rules);
-            this.executionPath = CompilerBuilder.Build(langTree);
+            var cb = new CompilerBuilder();
+            this.executionPath = cb.Build(langTree, assemblyCounter++);
+            langTree = BNFParser.Parse(this.Rules);
         }
     }
 }

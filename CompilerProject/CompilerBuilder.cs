@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 using TriAxis.RunSharp;
 
 namespace CompilerProject {
-    public static class CompilerBuilder {
+    public class CompilerBuilder {
         /// <summary>
         /// Returns the path to an assembly that can be executed using 
         /// AppDomain.CurrentDomain.ExecuteAssembly(path);
         /// </summary>
         /// <returns></returns>
-        public static string Build(ParseTree languageDefinition) {
-            var path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Grammar1.exe");
+        public string Build(ParseTree languageDefinition, int id) {
+            var path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), string.Format("Grammar{0}.exe", id));
             AssemblyGen ag = new AssemblyGen(path);
             TypeGen grammar = ag.Public.Class("grammar", typeof(Grammar));
             CodeGen constructorDef = grammar.Constructor();
@@ -33,6 +33,9 @@ namespace CompilerProject {
                         break;
                     case "RuleDefinition":
                         name = d.ChildNodes.First().Token.Value.ToString();
+                        if (!operands.ContainsKey(name)) {
+                            operands[name] = constructorDef.Local(Exp.New(typeof(NonTerminal), name));
+                        }
                         var o1 = operands[name];
                         var rules = d.ChildNodes[1];
                         Operand toAssign = null;
@@ -74,9 +77,9 @@ namespace CompilerProject {
             return path;
         }
 
-        private static Dictionary<string, Operand> operands = new Dictionary<string, Operand>();
+        private Dictionary<string, Operand> operands = new Dictionary<string, Operand>();
 
-        private static Operand parseBNFRule(ParseTreeNode node, CodeGen constructorDef) {
+        private Operand parseBNFRule(ParseTreeNode node, CodeGen constructorDef) {
             if (node.Term.ToString() == "QualifiedIdentifier") {
                 Operand op;
                 var identifierName = node.ChildNodes.First().Token.Value.ToString();
