@@ -30,7 +30,6 @@ namespace BNFRuleParser {
             var b1 = ToTerm("[");
             var b2 = ToTerm("]");
 
-            
 
             var binOp = new NonTerminal("binOp");
 

@@ -20,7 +20,6 @@ namespace CompilerProject {
             AssemblyGen ag = new AssemblyGen(path);
             TypeGen grammar = ag.Public.Class("grammar", typeof(Grammar));
             CodeGen constructorDef = grammar.Constructor();
-
             foreach (var statement in languageDefinition.Root.ChildNodes) {
                 var d = statement.ChildNodes.Single();
                 var type = d.Term.ToString();
@@ -85,16 +84,31 @@ namespace CompilerProject {
         private static Operand parseBNFRule(ParseTreeNode node, CodeGen constructorDef) {
             if (node.Term.ToString() == "QualifiedIdentifier") {
                 Operand op;
+                var identifierName = node.ChildNodes.First().Token.Value.ToString();
                 Operand toAssign;
-                var identifierName = node.ChildNodes.Single().Token.Value.ToString();
                 if (operands.TryGetValue(identifierName, out op)) {
                     Debug.Print("matched");
                     toAssign = op;
                 } else {
                     Debug.Print("not matched");
-                    //constructorDef.Invoke(constructorDef.This(), "ToTerm", Exp.New(typeof(string), identifierName));
                     toAssign = constructorDef.This().Invoke("ToTerm", identifierName);
-                    //toAssign = constructorDef.Local(Exp.New(typeof(Terminal), identifierName));
+                    //toAssign = constructorDef.Local(typeof(Terminal), Exp.New(typeof(Terminal), identifierName));
+                }
+                if (node.ChildNodes.Count() == 2) {
+                    var qualifier = node.ChildNodes.Last().ChildNodes.Single().Token.Value.ToString();
+                    var set = constructorDef.Local(Exp.New(typeof(NonTerminal), identifierName + "_set"));
+                    switch(qualifier){
+                        case "+":
+                            constructorDef.Assign(set.Field("Rule"), constructorDef.This().Invoke("MakePlusRule", set, null, toAssign));
+                            break;
+                        case "*":
+                            constructorDef.Assign(set.Field("Rule"), constructorDef.This().Invoke("MakeStarRule", set, null, toAssign));
+                            break;
+                        default:
+                            throw new Exception();
+                    }
+                      return set;
+                    //return toAssign;
                 }
                 return toAssign;
             }
@@ -104,7 +118,15 @@ namespace CompilerProject {
             } else if (node.ChildNodes.Count == 3) {
                 var a = parseBNFRule(node.ChildNodes.First(), constructorDef);
                 var b = parseBNFRule(node.ChildNodes.Last(), constructorDef);
-                return a.Add(b);
+                var val = node.ChildNodes[1].ChildNodes.Single().Term.ToString();
+                switch (val) {
+                    case "+":
+                        return a.Add(b);
+                    case "|":
+                        return a.BitwiseOr(b);
+                    default:
+                        throw new Exception();
+                }
             }
             throw new NotImplementedException();
         }
