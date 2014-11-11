@@ -15,6 +15,7 @@ namespace BNFRuleParser {
             var bnfRules = new NonTerminal("BnfRules");
             var bnfRule = new NonTerminal("BNFRule");
             var identifier = TerminalFactory.CreateCSharpIdentifier("identifier");
+            //var identifier = TerminalFactory.CreateCSharpString("identifier");
             var number = TerminalFactory.CreateCSharpNumber("number");
             var descriptor = new NonTerminal("Descriptor");
             var qualifiedIdentifier = new NonTerminal("QualifiedIdentifier");
@@ -29,7 +30,7 @@ namespace BNFRuleParser {
 
             var b1 = ToTerm("[");
             var b2 = ToTerm("]");
-
+            
 
             var binOp = new NonTerminal("binOp");
 

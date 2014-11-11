@@ -30,16 +30,26 @@ namespace CompilerProject {
         public MainWindow() {
             InitializeComponent();
             this.Rules = @"
-equation;
-number = t;
-root;
-root = number;
+sem = s;
+identifier = id;
+eq = e;
+bnfRule = rule | bnfRule + binOp +bnfRule ;
+bnfRules = bnfRule[+];
+nodeDefinition = identifier + sem;
+ruleDefinition = identifier + eq + bnfRules + sem;
+statement = nodeDefinition | ruleDefinition;
+statements = statement[+];
+root = statements;
 ";
 //root = t[+] + g[*];
 //root = t[+] + j;
 
 
-            this.Input = "t t t";
+            this.Input = @"
+id s
+id s
+id e rule s
+            ";
             this.process();
 
         }

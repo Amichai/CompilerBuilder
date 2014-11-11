@@ -13,7 +13,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <TextBox Text="{Binding Rules}" AcceptsReturn="True"/>
-        <TextBox Text="{Binding Input}" Grid.Column="1" />
+        <TextBox Text="{Binding Input}" Grid.Column="1" AcceptsReturn="True"/>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1">
             <Button  Padding="5" Margin="10" Width="100" Click="Compile_Click">Compile</Button>
