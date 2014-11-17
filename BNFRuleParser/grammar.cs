@@ -10,16 +10,17 @@ namespace BNFRuleParser {
         public grammar() {
             var statements = new NonTerminal("Statements");
             var bnfStatement = new NonTerminal("BnfStatement");
-            var nodeDefinition = new NonTerminal("NodeDefinition");
             var ruleDefinition = new NonTerminal("RuleDefinition");
             var bnfRules = new NonTerminal("BnfRules");
             var bnfRule = new NonTerminal("BNFRule");
             var identifier = TerminalFactory.CreateCSharpIdentifier("identifier");
+            var stringLiteral = new StringLiteral("identifier", "\"");
             //var identifier = TerminalFactory.CreateCSharpString("identifier");
             var number = TerminalFactory.CreateCSharpNumber("number");
             var descriptor = new NonTerminal("Descriptor");
             var qualifiedIdentifier = new NonTerminal("QualifiedIdentifier");
             var qualification = new NonTerminal("Qualification");
+            var specialType = new NonTerminal("SpecialType");
             var eq = ToTerm("=");   
             var or = ToTerm("|");
             var and = ToTerm("+");
@@ -30,22 +31,26 @@ namespace BNFRuleParser {
 
             var b1 = ToTerm("[");
             var b2 = ToTerm("]");
-            
+
+            var lb = ToTerm("<");
+            var rb = ToTerm(">");
 
             var binOp = new NonTerminal("binOp");
 
+            var nonTerminal = new NonTerminal("NonTerminal");
+            specialType.Rule = lb + identifier + rb;
             descriptor.Rule = q1 | q2;
-            bnfStatement.Rule = nodeDefinition | ruleDefinition;
-            nodeDefinition.Rule = identifier + sem;
+            bnfStatement.Rule = ruleDefinition;
             ruleDefinition.Rule = identifier + eq + bnfRules + sem;
             bnfRules.Rule = MakePlusRule(bnfRules, null, bnfRule);
             binOp.Rule = and | or;
             RegisterOperators(1, "+", "|");
-            this.MarkPunctuation(sem, b1, b2, eq);
+            this.MarkPunctuation(sem, b1, b2, eq, rb, lb);
 
             bnfRule.Rule = bnfRule + binOp + bnfRule | qualifiedIdentifier;
-
-            qualifiedIdentifier.Rule = identifier + b1 + qualification + b2 | identifier;
+            nonTerminal.Rule = identifier | stringLiteral | specialType;
+            qualifiedIdentifier.Rule = 
+                nonTerminal + b1 + qualification + b2 | nonTerminal;
             qualification.Rule = number | q1 | q2 | and;
 
             statements.Rule = MakePlusRule(statements, null, bnfStatement);

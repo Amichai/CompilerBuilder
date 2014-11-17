@@ -29,25 +29,25 @@ namespace CompilerProject {
     public partial class MainWindow : Window, INotifyPropertyChanged {
         public MainWindow() {
             InitializeComponent();
+
+
+
+
             this.Rules = @"
 sem = "";"";
 identifier = ""id"";
 eq = ""="";
-bnfRule =  rule | bnfRule + binOp + bnfRule;
+bnfRule =  ""rule"" | identifier;
 bnfRules = bnfRule[+];
-nodeDefinition = identifier + sem;
 ruleDefinition = identifier + eq + bnfRules + sem;
-statement = nodeDefinition | ruleDefinition;
+statement = ruleDefinition;
 statements = statement[+];
 root = statements;
 ";
-//root = t[+] + g[*];
-//root = t[+] + j;
+
 
 
             this.Input = @"
-id;
-id;
 id = rule;
             ";
             this.process();

@@ -21,6 +21,11 @@ namespace CompilerProject {
             AssemblyGen ag = new AssemblyGen(path);
             TypeGen grammar = ag.Public.Class("grammar", typeof(Grammar));
             CodeGen constructorDef = grammar.Constructor();
+            //if (languageDefinition.ParserMessages.Count() > 0) {
+
+            //}
+            Debug.Print(languageDefinition.ToXml());
+
             foreach (var statement in languageDefinition.Root.ChildNodes) {
                 var d = statement.ChildNodes.Single();
                 var type = d.Term.ToString();
@@ -33,7 +38,7 @@ namespace CompilerProject {
                         break;
                     case "RuleDefinition":
                         name = d.ChildNodes.First().Token.Value.ToString();
-                        if (!operands.ContainsKey(name)) {
+                        if (!operands.ContainsKey(name))    {
                             operands[name] = constructorDef.Local(Exp.New(typeof(NonTerminal), name));
                         }
                         var o1 = operands[name];
@@ -82,7 +87,13 @@ namespace CompilerProject {
         private Operand parseBNFRule(ParseTreeNode node, CodeGen constructorDef) {
             if (node.Term.ToString() == "QualifiedIdentifier") {
                 Operand op;
-                var identifierName = node.ChildNodes.First().Token.Value.ToString();
+                var child = node.ChildNodes.First();
+                string identifierName;
+                if (child.Token == null) {
+                    identifierName = child.ChildNodes.Single().Token.Value.ToString();
+                } else {
+                    identifierName = child.Token.Value.ToString();
+                }
                 Operand toAssign;
                 if (operands.TryGetValue(identifierName, out op)) {
                     Debug.Print("matched");
