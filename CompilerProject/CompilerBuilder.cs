@@ -84,12 +84,28 @@ namespace CompilerProject {
 
         private Dictionary<string, Operand> operands = new Dictionary<string, Operand>();
 
+        private Operand parseSpecialType(ParseTreeNode node, CodeGen constructorDef) {
+            var val = node.ChildNodes.Single().Token.Value.ToString();
+            switch (val) {
+                case "csidentifier":
+                    return constructorDef.Local(typeof(IdentifierTerminal), Static.Invoke(typeof(TerminalFactory), "CreateCSharpIdentifier", "identifier"));
+                case "number":
+                    return constructorDef.Local(typeof(NumberLiteral), Static.Invoke(typeof(TerminalFactory), "CreateCSharpNumber", "number"));
+                default:
+                    throw new Exception("Unknown special type");
+            }
+        }
+
         private Operand parseBNFRule(ParseTreeNode node, CodeGen constructorDef) {
             if (node.Term.ToString() == "QualifiedIdentifier") {
                 Operand op;
                 var child = node.ChildNodes.First();
                 string identifierName;
                 if (child.Token == null) {
+                    var term = child.ChildNodes.Single().Term;
+                    if (term != null && term.ToString() == "SpecialType") {
+                        return this.parseSpecialType(child.ChildNodes.Single(), constructorDef);
+                    }
                     identifierName = child.ChildNodes.Single().Token.Value.ToString();
                 } else {
                     identifierName = child.Token.Value.ToString();

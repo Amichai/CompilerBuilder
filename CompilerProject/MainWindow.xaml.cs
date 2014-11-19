@@ -30,16 +30,13 @@ namespace CompilerProject {
         public MainWindow() {
             InitializeComponent();
 
-
-
-
             this.Rules = @"
 sem = "";"";
-identifier = ""id"";
+binOp = ""+"" | ""-"";
 eq = ""="";
-bnfRule =  ""rule"" | identifier;
-bnfRules = bnfRule[+];
-ruleDefinition = identifier + eq + bnfRules + sem;
+bnfRule =  <csidentifier> | <number>;
+bnfRules = bnfRule | bnfRules + binOp + bnfRule;
+ruleDefinition = <csidentifier>+ eq + bnfRules + sem;
 statement = ruleDefinition;
 statements = statement[+];
 root = statements;
@@ -48,8 +45,14 @@ root = statements;
 
 
             this.Input = @"
-id = rule;
+identif = rule + 4 + 4 - testing + 3.34234;
             ";
+
+
+            t.WriteLineEvent += (s, e) => {
+                this.Output += e.Value + "\n";
+            };
+            Console.SetOut(t);
             this.process();
 
         }
@@ -84,12 +87,24 @@ id = rule;
         private void Process_Click(object sender, RoutedEventArgs e) {
             process();
         }
+        
+        ConsoleWriter t = new ConsoleWriter();
+
+        private string _Output;
+        public string Output {
+            get { return _Output; }
+            set {
+                _Output = value;
+                NotifyPropertyChanged();
+            }
+        }
 
         private void process() {
             if (this.executionPath == null) {
                 this.compile();
             }
-            AppDomain.CurrentDomain.ExecuteAssembly(executionPath, new string[] { this.Input });
+            this.Output = string.Empty;
+            var r = AppDomain.CurrentDomain.ExecuteAssembly(executionPath, new string[] { this.Input });
 
         }
         private string executionPath = null;

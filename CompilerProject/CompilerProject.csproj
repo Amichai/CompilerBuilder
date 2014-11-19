@@ -69,6 +69,7 @@
     </Compile>
     <Compile Include="BNFRule.cs" />
     <Compile Include="CompilerBuilder.cs" />
+    <Compile Include="ConsoleWriter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

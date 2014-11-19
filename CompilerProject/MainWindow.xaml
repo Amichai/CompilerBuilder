@@ -6,6 +6,9 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition />
+            <ColumnDefinition Width="5"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -13,9 +16,15 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <TextBox Text="{Binding Rules}" AcceptsReturn="True"/>
-        <TextBox Text="{Binding Input}" Grid.Column="1" AcceptsReturn="True"/>
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></GridSplitter>
+        <TextBox Text="{Binding Input}" Grid.Column="2" AcceptsReturn="True"/>
+        <GridSplitter Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></GridSplitter>
+        <ScrollViewer Grid.Column="4">
+            <TextBlock Text="{Binding Output}" />
+        </ScrollViewer>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="1">
+
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="5">
             <Button  Padding="5" Margin="10" Width="100" Click="Compile_Click">Compile</Button>
             <Button  Padding="5" Margin="10" Width="100" Click="Process_Click">Process</Button>
             
