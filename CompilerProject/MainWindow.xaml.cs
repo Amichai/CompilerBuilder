@@ -1,5 +1,6 @@
 ﻿using BNFRuleParser;
 using Irony.Parsing;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -20,6 +21,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 using TriAxis.RunSharp;
 
 namespace CompilerProject {
@@ -30,30 +32,39 @@ namespace CompilerProject {
         public MainWindow() {
             InitializeComponent();
 
-            this.Rules = @"
-sem = "";"";
-binOp = ""+"" | ""-"";
-eq = ""="";
-bnfRule =  <csidentifier> | <number>;
-bnfRules = bnfRule | bnfRules + binOp + bnfRule;
-ruleDefinition = <csidentifier>+ eq + bnfRules + sem;
-statement = ruleDefinition;
-statements = statement[+];
-root = statements;
-";
+//            this.Rules = @"
+//sem = "";"";
+//binOp = ""+"" | ""-"";
+//eq = ""="";
+//bnfRule =  <csidentifier> | <number>;
+//bnfRules = bnfRule | bnfRules + binOp + bnfRule;
+//ruleDefinition = <csidentifier> + eq + bnfRules + sem;
+//statement = ruleDefinition;
+//statements = statement[+];
+//root = statements;
+//";
 
 
 
-            this.Input = @"
-identif = rule + 4 + 4 - testing + 3.34234;
-            ";
+//            this.Input = @"
+//identif = rule + 4 + 4 - testing + 3.34234;
+//            ";
 
-
+            var path = Properties.Settings.Default.LastSavePath;
+            if (!string.IsNullOrWhiteSpace(path)) {
+                this.open(path);
+            }
             t.WriteLineEvent += (s, e) => {
                 this.Output += e.Value + "\n";
             };
             Console.SetOut(t);
-            this.process();
+            if (this.SavePath != null) {
+                try {
+                    this.process();
+                } catch {
+
+                }
+            }
 
         }
 
@@ -119,6 +130,98 @@ identif = rule + 4 + 4 - testing + 3.34234;
             var cb = new CompilerBuilder();
             this.executionPath = cb.Build(langTree, assemblyCounter++);
             langTree = BNFParser.Parse(this.Rules);
+        }
+
+        public string TitleText {
+            get {
+                string suffix = string.Empty;
+                if (!string.IsNullOrWhiteSpace(SavePath)) {
+                    suffix += " - ";
+                    if (!this.Saved) {
+                        suffix += "*";
+                    }
+                    suffix += SavePath;
+                }
+                return string.Format("Compiler Builder {0}", suffix); 
+            }
+        }
+
+        private string _SavePath;
+        public string SavePath {
+            get { return _SavePath; }
+            set {
+                _SavePath = value;
+                NotifyPropertyChanged("TitleText");
+            }
+        }
+
+        private bool _Saved;
+        public bool Saved {
+            get { return _Saved; }
+            set {
+                _Saved = value;
+                NotifyPropertyChanged("TitleText");
+            }
+        }
+
+        private void Save_Click(object sender, RoutedEventArgs e) {
+            if (!this.Saved) {
+                this.saveAs();
+            } else {
+                this.save(this.SavePath);
+            }
+        }
+
+
+        private void saveAs() {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.ShowDialog();
+            var name = sfd.FileName;
+            if (string.IsNullOrWhiteSpace(name)) {
+                return;
+            }
+            this.SavePath = name;
+            this.save(name);
+        }
+
+        private void save(string name) {
+            XElement def = new XElement("State");
+            def.Add(new XAttribute("Definition", this.Rules));
+            def.Add(new XAttribute("Input", this.Input));
+            def.Save(name);
+            this.Saved = true;
+            Properties.Settings.Default.LastSavePath = name;
+            Properties.Settings.Default.Save();
+        }
+
+
+        private void SaveAs_Click(object sender, RoutedEventArgs e) {
+            this.saveAs();
+        }
+
+        private void Open_Click(object sender, RoutedEventArgs e) {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.ShowDialog();
+            var path = ofd.FileName;
+            open(path);
+        }
+
+        private void open(string path) {
+            Properties.Settings.Default.LastSavePath = path;
+            Properties.Settings.Default.Save();
+            this.SavePath = path;
+            var xml = XElement.Load(path);
+            this.Rules = xml.Attribute("Definition").Value;
+            this.Input = xml.Attribute("Input").Value;
+            this.Saved = true;
+        }
+
+        private void Input_TextChanged(object sender, TextChangedEventArgs e) {
+            this.Saved = false;
+        }
+
+        private void Rules_TextChanged(object sender, TextChangedEventArgs e) {
+            this.Saved = false;
         }
     }
 }
