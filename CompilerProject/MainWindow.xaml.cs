@@ -223,5 +223,15 @@ namespace CompilerProject {
         private void Rules_TextChanged(object sender, TextChangedEventArgs e) {
             this.Saved = false;
         }
+
+        private void New_Click(object sender, RoutedEventArgs e) {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.ShowDialog();
+            this.Rules = "";
+            this.Input = "";
+            var path = sfd.FileName;
+            this.SavePath = path;
+            this.save(path);
+        }
     }
 }

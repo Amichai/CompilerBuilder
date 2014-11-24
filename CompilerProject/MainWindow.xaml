@@ -30,7 +30,7 @@
             <Button  Padding="5" Margin="10" Width="100" Click="Save_Click">Save</Button>
             <Button  Padding="5" Margin="10" Width="100" Click="SaveAs_Click">Save As</Button>
             <Button  Padding="5" Margin="10" Width="100" Click="Open_Click">Open</Button>
-
+            <Button  Padding="5" Margin="10" Width="100" Click="New_Click">New</Button>
         </StackPanel>
     </Grid>
 </Window>

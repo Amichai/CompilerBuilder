@@ -84,11 +84,13 @@ namespace CompilerProject {
 
         private Dictionary<string, Operand> operands = new Dictionary<string, Operand>();
 
-        private Operand parseSpecialType(ParseTreeNode node, CodeGen constructorDef) {
+        private Operand parseSpecialType(ParseTreeNode node, CodeGen constructorDef, out string typeName) {
             var val = node.ChildNodes.Single().Token.Value.ToString();
+            typeName = val;
             switch (val) {
                 case "csidentifier":
-                    return constructorDef.Local(typeof(IdentifierTerminal), Static.Invoke(typeof(TerminalFactory), "CreateCSharpIdentifier", "identifier"));
+                    return constructorDef.Local(typeof(IdentifierTerminal), 
+                        Static.Invoke(typeof(TerminalFactory), "CreateCSharpIdentifier", "identifier"));
                 case "number":
                     return constructorDef.Local(typeof(NumberLiteral), Static.Invoke(typeof(TerminalFactory), "CreateCSharpNumber", "number"));
                 default:
@@ -104,7 +106,15 @@ namespace CompilerProject {
                 if (child.Token == null) {
                     var term = child.ChildNodes.Single().Term;
                     if (term != null && term.ToString() == "SpecialType") {
-                        return this.parseSpecialType(child.ChildNodes.Single(), constructorDef);
+                        string typeName;
+                        var toReturn = this.parseSpecialType(child.ChildNodes.Single(), constructorDef, out typeName);
+                        Operand t2;
+                        if (operands.TryGetValue(typeName, out t2)) {
+                            return t2;
+                        } else {
+                            operands[typeName] = toReturn;
+                            return toReturn;
+                        }
                     }
                     identifierName = child.ChildNodes.Single().Token.Value.ToString();
                 } else {
@@ -140,9 +150,12 @@ namespace CompilerProject {
             if (node.ChildNodes.Count == 1) {
                 return parseBNFRule(node.ChildNodes.Single(), constructorDef);
             } else if (node.ChildNodes.Count == 3) {
+                var val = node.ChildNodes[1].ChildNodes.Single().Term.ToString();
+                if (val == "|") {
+
+                }
                 var a = parseBNFRule(node.ChildNodes.First(), constructorDef);
                 var b = parseBNFRule(node.ChildNodes.Last(), constructorDef);
-                var val = node.ChildNodes[1].ChildNodes.Single().Term.ToString();
                 switch (val) {
                     case "+":
                         return a.Add(b);
