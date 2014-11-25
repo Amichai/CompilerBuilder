@@ -41,7 +41,7 @@ namespace BNFRuleParser {
             specialType.Rule = lb + identifier + rb;
             descriptor.Rule = q1 | q2;
             bnfStatement.Rule = ruleDefinition;
-            ruleDefinition.Rule = identifier + eq + bnfRules + sem;
+            ruleDefinition.Rule = identifier + eq + bnfRules + sem | identifier + sem;
             bnfRules.Rule = MakePlusRule(bnfRules, null, bnfRule);
             binOp.Rule = and | or;
             RegisterOperators(1, "+", "|");

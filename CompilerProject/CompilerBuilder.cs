@@ -42,11 +42,13 @@ namespace CompilerProject {
                             operands[name] = constructorDef.Local(Exp.New(typeof(NonTerminal), name));
                         }
                         var o1 = operands[name];
-                        var rules = d.ChildNodes[1];
-                        Operand toAssign = null;
-                        foreach (var rule in rules.ChildNodes) {
-                            toAssign = parseBNFRule(rule, constructorDef);
-                            constructorDef.Assign(o1.Field("Rule"), toAssign);
+                        if (d.ChildNodes.Count() > 1) {
+                            var rules = d.ChildNodes[1];
+                            Operand toAssign = null;
+                            foreach (var rule in rules.ChildNodes) {
+                                toAssign = parseBNFRule(rule, constructorDef);
+                                constructorDef.Assign(o1.Field("Rule"), toAssign);
+                            }
                         }
                         break;
                     default:
