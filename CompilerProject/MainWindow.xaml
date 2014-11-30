@@ -25,12 +25,24 @@
 
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="5">
-            <Button  Padding="5" Margin="10" Width="100" Click="Compile_Click">Compile</Button>
-            <Button  Padding="5" Margin="10" Width="100" Click="Process_Click">Process</Button>
-            <Button  Padding="5" Margin="10" Width="100" Click="Save_Click">Save</Button>
-            <Button  Padding="5" Margin="10" Width="100" Click="SaveAs_Click">Save As</Button>
-            <Button  Padding="5" Margin="10" Width="100" Click="Open_Click">Open</Button>
-            <Button  Padding="5" Margin="10" Width="100" Click="New_Click">New</Button>
+            <Button  Padding="5" Margin="10" Click="Compile_Click" >
+                <Image Source="pack://application:,,,/CompilerProject;component/Assets/rotate2.png"  Width="20"/>
+            </Button>
+            <Button  Padding="5" Margin="10" Click="Process_Click">
+                <Image Source="pack://application:,,,/CompilerProject;component/Assets/media23.png" Width="20"/>
+            </Button>
+            <Button  Padding="5" Margin="10" Click="Save_Click">
+                <Image Source="pack://application:,,,/CompilerProject;component/Assets/floppy1.png" Width="20"/>
+            </Button>
+            <Button  Padding="5" Margin="10" Click="SaveAs_Click">
+                <Image Source="pack://application:,,,/CompilerProject;component/Assets/download168.png" Width="20"/>
+            </Button>
+            <Button  Padding="5" Margin="10" Click="Open_Click">
+                <Image Source="pack://application:,,,/CompilerProject;component/Assets/folder232.png" Width="20"/>
+            </Button>
+            <Button  Padding="5" Margin="10" Click="New_Click">
+                <Image Source="pack://application:,,,/CompilerProject;component/Assets/new10.png" Width="20"/>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>
